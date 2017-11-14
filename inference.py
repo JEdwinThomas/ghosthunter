@@ -336,14 +336,18 @@ class ParticleFilter(InferenceModule):
         self.particles for the list of particles.
         """
         self.particles = []
-        "*** YOUR CODE HERE ***"
         if len(self.legalPositions) < self.numParticles:
             for pos in self.legalPositions:
-                for i in range(0, self.numParticles // self.legalPositions):
+                for i in range(0, self.numParticles // len(self.legalPositions)):
                     self.particles.append(pos)
-        if len(self.particles) < self.numParticles:
-            for pos_ind in range(0, len(self.legalPositions), ):
-                if
+        particles_left = self.numParticles - len(self.particles)
+        while particles_left:
+            particles_left = self.numParticles - len(self.particles)
+            for pos_ind in range(0, len(self.legalPositions), len(self.legalPositions) // particles_left):
+                self.particles.append(self.legalPositions[pos_ind])
+        t ={x:(self.particles.count(x)) for x in self.legalPositions}
+        t
+
 
 
     def observeUpdate(self, observation, gameState):
@@ -375,8 +379,9 @@ class ParticleFilter(InferenceModule):
         """
         dist = DiscreteDistribution()
         for x in self.allPositions:
-            cnt = self.particles.count(x)
-            dist[x] = cnt/self.numParticles
+            cnt = float(self.particles.count(x))
+            t = cnt / len(self.particles)
+            dist[x] = t
         return dist
 
 
