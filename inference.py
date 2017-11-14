@@ -286,7 +286,9 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
-        "*** YOUR CODE HERE ***"
+        for k in self.beliefs.keys():
+            obs_prob = self.getObservationProb(observation, gameState.getPacmanPosition(), k, self.getJailPosition())
+            self.beliefs[k] = self.beliefs[k] * obs_prob
         self.beliefs.normalize()
 
     def elapseTime(self, gameState):
