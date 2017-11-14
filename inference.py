@@ -312,10 +312,6 @@ class ExactInference(InferenceModule):
         self.beliefs = conditionalTable
 
 
-
-
-
-
     def getBeliefDistribution(self):
         return self.beliefs
 
@@ -341,6 +337,14 @@ class ParticleFilter(InferenceModule):
         """
         self.particles = []
         "*** YOUR CODE HERE ***"
+        if len(self.legalPositions) < self.numParticles:
+            for pos in self.legalPositions:
+                for i in range(0, self.numParticles // self.legalPositions):
+                    self.particles.append(pos)
+            if len(self.particles) < self.numParticles:
+                for pos in self.legalPositions:
+                    if
+
 
     def observeUpdate(self, observation, gameState):
         """
