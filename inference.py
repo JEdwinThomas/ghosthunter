@@ -75,8 +75,9 @@ class DiscreteDistribution(dict):
         {}
         """
         cur_sum = self.total()
-        for k in self.keys():
-            self[k] = self[k]/cur_sum
+        if cur_sum:
+            for k in self.keys():
+                self[k] = self[k]/cur_sum
 
 
 
@@ -286,6 +287,8 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
+        newPosDist = self.getPositionDistribution(gameState, self.beliefs.keys()[1])
+
         for k in self.beliefs.keys():
             obs_prob = self.getObservationProb(observation, gameState.getPacmanPosition(), k, self.getJailPosition())
             self.beliefs[k] = self.beliefs[k] * obs_prob
@@ -300,7 +303,19 @@ class ExactInference(InferenceModule):
         Pacman's current position. However, this is not a problem, as Pacman's
         current position is known.
         """
-        "*** YOUR CODE HERE ***"
+        conditionalTable = DiscreteDistribution()
+
+        for k in self.allPositions:
+            posDist = self.getPositionDistribution(gameState, k)
+            for kk in posDist.keys():
+                posDist[kk] = posDist[kk] * self.beliefs[k]
+                conditionalTable[kk] += posDist[kk]
+        self.beliefs.update(conditionalTable)
+
+
+
+
+
 
     def getBeliefDistribution(self):
         return self.beliefs
