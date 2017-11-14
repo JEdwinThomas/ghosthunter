@@ -289,7 +289,7 @@ class ExactInference(InferenceModule):
         """
         newPosDist = self.getPositionDistribution(gameState, self.beliefs.keys()[1])
 
-        for k in self.beliefs.keys():
+        for k in self.allPositions:
             obs_prob = self.getObservationProb(observation, gameState.getPacmanPosition(), k, self.getJailPosition())
             self.beliefs[k] = self.beliefs[k] * obs_prob
         self.beliefs.normalize()
@@ -304,13 +304,12 @@ class ExactInference(InferenceModule):
         current position is known.
         """
         conditionalTable = DiscreteDistribution()
-
         for k in self.allPositions:
             posDist = self.getPositionDistribution(gameState, k)
             for kk in posDist.keys():
                 posDist[kk] = posDist[kk] * self.beliefs[k]
                 conditionalTable[kk] += posDist[kk]
-        self.beliefs.update(conditionalTable)
+        self.beliefs = conditionalTable
 
 
 
@@ -370,7 +369,11 @@ class ParticleFilter(InferenceModule):
         locations conditioned on all evidence and time passage. This method
         essentially converts a list of particles into a belief distribution.
         """
-        "*** YOUR CODE HERE ***"
+        dist = DiscreteDistribution()
+        for x in self.allPositions:
+            cnt = self.particles.count(x)
+            dist[x] = cnt/self.numParticles
+        return dist
 
 
 class JointParticleFilter(ParticleFilter):

@@ -140,4 +140,17 @@ class GreedyBustersAgent(BustersAgent):
         livingGhostPositionDistributions = \
             [beliefs for i, beliefs in enumerate(self.ghostBeliefs)
              if livingGhosts[i+1]]
-        "*** YOUR CODE HERE ***"
+        #update positions
+        ghostPos = []
+        for index, inf in enumerate(self.inferenceModules):
+            inf.observeUpdate(inf.obs, gameState)
+            ghostPos.append(inf.getBeliefDistribution().argMax())
+        act = (None, None)
+        for a in legal:
+            nextpos = Actions.getSuccessor(pacmanPosition, a)
+            minDist = min([self.distancer.getDistance(nextpos, x) for x in ghostPos])
+            if (act[1] == None) or (minDist < act[1]):
+                act = (a, minDist)
+        return act[0]
+
+
