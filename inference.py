@@ -341,9 +341,9 @@ class ParticleFilter(InferenceModule):
             for pos in self.legalPositions:
                 for i in range(0, self.numParticles // self.legalPositions):
                     self.particles.append(pos)
-            if len(self.particles) < self.numParticles:
-                for pos in self.legalPositions:
-                    if
+        if len(self.particles) < self.numParticles:
+            for pos_ind in range(0, len(self.legalPositions), ):
+                if
 
 
     def observeUpdate(self, observation, gameState):
