@@ -103,8 +103,13 @@ class DiscreteDistribution(dict):
         >>> round(samples.count('d') * 1.0/N, 1)
         0.0
         """
-        "*** YOUR CODE HERE ***"
-
+        self.normalize()
+        seed = random.random()
+        t = 0
+        for key, val in self.items():
+            t += val
+            if t > seed:
+                return key
 
 class InferenceModule:
     """
@@ -341,10 +346,10 @@ class ParticleFilter(InferenceModule):
                 for i in range(0, self.numParticles // len(self.legalPositions)):
                     self.particles.append(pos)
         particles_left = self.numParticles - len(self.particles)
-        while particles_left:
-            particles_left = self.numParticles - len(self.particles)
+        while particles_left > 0 :
             for pos_ind in range(0, len(self.legalPositions), len(self.legalPositions) // particles_left):
                 self.particles.append(self.legalPositions[pos_ind])
+            particles_left = self.numParticles - len(self.particles)
         t ={x:(self.particles.count(x)) for x in self.legalPositions}
         t
 
@@ -362,7 +367,21 @@ class ParticleFilter(InferenceModule):
         be reinitialized by calling initializeUniformly. The total method of
         the DiscreteDistribution may be useful.
         """
-        "*** YOUR CODE HERE ***"
+        particle_weights = DiscreteDistribution()
+        obs_probs = DiscreteDistribution()
+        for x in self.particles:
+            if x not in obs_probs:
+                obs_probs[x] = self.getObservationProb(observation, gameState.getPacmanPosition(),
+                                    x, self.getJailPosition())
+            particle_weights[x] += obs_probs[x]
+        if particle_weights.total() == 0:
+            self.initializeUniformly(gameState)
+        particle_weights.normalize()
+        self.particles = [particle_weights.sample() for x in range(0,self.numParticles)]
+
+
+
+
 
     def elapseTime(self, gameState):
         """
