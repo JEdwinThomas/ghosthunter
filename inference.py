@@ -316,7 +316,6 @@ class ExactInference(InferenceModule):
                 conditionalTable[kk] += posDist[kk]
         self.beliefs = conditionalTable
 
-
     def getBeliefDistribution(self):
         return self.beliefs
 
@@ -391,6 +390,12 @@ class ParticleFilter(InferenceModule):
         gameState.
         """
         "*** YOUR CODE HERE ***"
+        newParticles = self.particles[:]
+        for particle_ind in range(self.numParticles):
+            posDist = self.getPositionDistribution(gameState, self.particles[particle_ind])
+            newParticles[particle_ind] = posDist.sample()
+        self.particles = newParticles
+
 
     def getBeliefDistribution(self):
         """
