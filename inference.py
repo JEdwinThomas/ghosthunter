@@ -376,8 +376,10 @@ class ParticleFilter(InferenceModule):
             particle_weights[x] += obs_probs[x]
         if particle_weights.total() == 0:
             self.initializeUniformly(gameState)
-        particle_weights.normalize()
-        self.particles = [particle_weights.sample() for x in range(0,self.numParticles)]
+        else:
+            particle_weights.normalize()
+            self.particles = [particle_weights.sample() for x in range(0,self.numParticles)]
+
 
 
 
