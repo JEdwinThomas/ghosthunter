@@ -380,10 +380,6 @@ class ParticleFilter(InferenceModule):
             self.particles = [particle_weights.sample() for x in range(0,self.numParticles)]
 
 
-
-
-
-
     def elapseTime(self, gameState):
         """
         Sample each particle's next state based on its current state and the
@@ -404,7 +400,7 @@ class ParticleFilter(InferenceModule):
         essentially converts a list of particles into a belief distribution.
         """
         dist = DiscreteDistribution()
-        for x in self.allPositions:
+        for x in set(self.particles):
             cnt = float(self.particles.count(x))
             t = cnt / len(self.particles)
             dist[x] = t
@@ -434,8 +430,9 @@ class JointParticleFilter(ParticleFilter):
         should be evenly distributed across positions in order to ensure a
         uniform prior.
         """
-        self.particles = []
-        "*** YOUR CODE HERE ***"
+        self.particles = list(itertools.product(self.legalPositions, repeat=self.numGhosts))
+
+
 
     def addGhostAgent(self, agent):
         """
