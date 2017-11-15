@@ -14,6 +14,9 @@
 
 import itertools
 import random
+
+import operator
+
 import busters
 import game
 
@@ -431,6 +434,7 @@ class JointParticleFilter(ParticleFilter):
         uniform prior.
         """
         self.particles = list(itertools.product(self.legalPositions, repeat=self.numGhosts))
+        random.shuffle(self.particles)
 
 
 
@@ -464,7 +468,17 @@ class JointParticleFilter(ParticleFilter):
         be reinitialized by calling initializeUniformly. The total method of
         the DiscreteDistribution may be useful.
         """
-        "*** YOUR CODE HERE ***"
+        particle_weights = DiscreteDistribution()
+
+        for x in self.particles:
+            ind_weights = [self.getObservationProb(observation[i], gameState.getPacmanPosition(),
+                                                   x[i], self.getJailPosition(i)) for i in range(self.numGhosts)]
+            particle_weights[x] += reduce(operator.mul, ind_weights)
+        if particle_weights.total() == 0:
+            self.initializeUniformly(gameState)
+        else:
+            particle_weights.normalize()
+            self.particles = [particle_weights.sample() for x in range(0, self.numParticles)]
 
     def elapseTime(self, gameState):
         """
